@@ -3,7 +3,7 @@ package daysteps
 import (
 	"errors"
 	"fmt"
-	"go-sprint4/internal/spentcalories"
+	"github.com/vladkohan/go-sprint4/internal/spentcalories"
 	"strconv"
 	"strings"
 	"time"
