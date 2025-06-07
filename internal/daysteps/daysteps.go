@@ -3,65 +3,68 @@ package daysteps
 import (
 	"errors"
 	"fmt"
-	"github.com/vladkohan/go-sprint4/internal/spentcalories"
+	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/vladkohan/go-sprint4/internal/spentcalories"
 )
 
 const (
-	// Длина одного шага в метрах
-	stepLength = 0.65
-	// Количество метров в одном километре
-	mInKm = 1000
+	stepLength = 0.65 // Длина одного шага в метрах
+	mInKm      = 1000 // Количество метров в одном километре
 )
 
 func parsePackage(data string) (int, time.Duration, error) {
-	parts := strings.Split(data, " ")
+	parts := strings.Split(data, ",")
 	if len(parts) != 2 {
-		return 0, 0, errors.New("Неверное количество элементов")
+		return 0, 0, errors.New("неверный формат данных")
 	}
 
 	steps, err := strconv.Atoi(parts[0])
 	if err != nil {
 		return 0, 0, err
 	}
+
 	if steps <= 0 {
-		return 0, 0, errors.New("Количество шагов должно быть больше нуля")
+		return 0, 0, errors.New("количество шагов должно быть больше 0")
 	}
 
-	walkTime, err := time.ParseDuration(parts[1])
-
+	duration, err := time.ParseDuration(parts[1])
 	if err != nil {
 		return 0, 0, err
 	}
-	if walkTime <= 0 {
-		return 0, 0, errors.New("Время прогулки должно быть больше нуля")
+
+	if duration <= 0 {
+		return 0, 0, errors.New("продолжительность должна быть больше 0")
 	}
 
-	return steps, walkTime, nil
+	return steps, duration, nil
+	//return 0,0,nil
 }
 
 func DayActionInfo(data string, weight, height float64) string {
-	steps, walkTime, err := parsePackage(data)
+	steps, duration, err := parsePackage(data)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 		return ""
 	}
 
 	if steps <= 0 {
+		log.Print("количество шагов должно быть больше 0")
 		return ""
 	}
 
 	distance := float64(steps) * stepLength
 	distanceKm := distance / mInKm
 
-	calories, err := spentcalories.WalkingSpentCalories(steps, weight, height, walkTime)
+	calories, err := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 		return ""
 	}
 
-	return fmt.Sprintf("Пройдено %.2f км, потрачено %.2f калорий за %s.", distanceKm, calories, walkTime)
-
+	return fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n",
+		steps, distanceKm, calories)
 }
