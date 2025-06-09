@@ -224,7 +224,6 @@ func (suite *DayStepsTestSuite) TestParsePackage() {
 		})
 	}
 }
-
 func (suite *DayStepsTestSuite) TestDayActionInfo() {
 	var buf bytes.Buffer
 	log.SetOutput(&buf)
